@@ -1,33 +1,34 @@
-import { Typography } from "@mui/material";
-import { useState, useEffect } from "react";
+import { Container, createTheme, ThemeProvider } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { useState } from 'react';
 import Catalog from "../../features/catalog/Catalog";
-import { Product } from '../models/product';
+import Header from "./Header";
 
 function App() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [darkMode, setDarkMode] = useState(false);
+  const paletteType = darkMode ? 'dark' : 'light';
 
-  useEffect(() => {
-    fetch('https://localhost:44374/api/Product')
-    .then(response => response.json())
-    .then(data => setProducts(data));
-  }, []);
-  
-  function addProduct(){
-    setProducts([...products, {
-      name: "The Wire DVD",
-       price: 399,
-       brand: "dvds",
-       description: "test",
-       id: "guid",
-       pictureUrl: "www.google.se"
-    }]);
+  const theme = createTheme({
+    palette: {
+      mode: paletteType,
+      background: {
+        default: paletteType === 'light' ? '#eaeaea' : '#121212'
+      }
+    }
+  })
+
+  function handleThemeChange() {
+    setDarkMode(!darkMode);
   }
 
   return (
-    <>
-      <Typography variant='h1'>Shoppify</Typography>
-      <Catalog products={products} addProduct={addProduct}></Catalog>
-    </>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Header darkMode={darkMode} handleThemeChange={handleThemeChange} />
+      <Container>
+        <Catalog></Catalog>
+      </Container>
+    </ThemeProvider>
   );
 }
 
