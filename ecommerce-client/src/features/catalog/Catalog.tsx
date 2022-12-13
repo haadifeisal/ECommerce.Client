@@ -8,7 +8,7 @@ export default function Catalog() {
     useEffect(() => {
         fetch('https://localhost:44374/api/Product')
             .then(response => response.json())
-            .then(data => setProducts(data));
+            .then((data:Product[]) => setProducts(data));
     }, []);
 
     return (
