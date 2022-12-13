@@ -1,7 +1,8 @@
 import { Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material";
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import api from "../../app/api/api";
+import NotFound from "../../app/errors/NotFound";
 import { Product } from "../../app/models/product";
 
 export default function ProductDetails(){
@@ -10,10 +11,10 @@ export default function ProductDetails(){
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        axios.get(`https://localhost:44374/api/Product/${id}`)
-              .then(response => setProduct(response.data))
-              .catch(error => console.log(error))
-              .finally(() => setLoading(false));
+        api.Catalog.details(id ?? '')
+            .then(product => setProduct(product))
+            .catch(error => console.log(error))
+            .finally(() => setLoading(false));
     }, [id]);
 
     if(loading){
@@ -24,7 +25,7 @@ export default function ProductDetails(){
 
     if(!product){
         return (
-            <h3>Product not found</h3>
+            <NotFound />
         )
     }
 
