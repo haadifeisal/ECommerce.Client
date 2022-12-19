@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../app/api/api";
 import NotFound from "../../app/errors/NotFound";
+import Loading from "../../app/layout/Loading";
 import { Product } from "../../app/models/product";
 
 export default function ProductDetails(){
@@ -11,16 +12,14 @@ export default function ProductDetails(){
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        api.Catalog.details(id ?? '')
+        api.Catalog.details(id!)
             .then(product => setProduct(product))
             .catch(error => console.log(error))
             .finally(() => setLoading(false));
     }, [id]);
 
     if(loading){
-        return (
-            <h3>Loading ...</h3>
-        )
+        return <Loading message='Loading product ...' />
     }
 
     if(!product){
