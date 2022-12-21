@@ -3,6 +3,7 @@ import { Avatar, Button, Card, CardActions, CardContent, CardMedia, Typography, 
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../app/api/api";
+import { useStoreContext } from "../../app/context/StoreContext";
 import { Product } from "../../app/models/product";
 
 interface Props {
@@ -10,13 +11,15 @@ interface Props {
 }
 
 export default function ProductCard({ product }: Props) {
+    const {setBasket} = useStoreContext();
     const [loading, setLoading] = useState(false);
 
     function handleAddItem(productId: string){
         setLoading(true);
         api.Basket.addItem(productId)
-        .catch(error => console.log(error))
-        .finally(() => setLoading(false));
+            .then(basket => setBasket(basket))
+            .catch(error => console.log(error))
+            .finally(() => setLoading(false));
     }
 
     return (
