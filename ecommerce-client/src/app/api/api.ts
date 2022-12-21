@@ -3,7 +3,8 @@ import { toast } from "react-toastify";
 
 const sleep = () => new Promise(resolve => setTimeout(resolve, 500));
 
-axios.defaults.baseURL = 'https://localhost:44374/api/';
+axios.defaults.baseURL = 'http://localhost:5000/api/';
+axios.defaults.withCredentials = true;
 
 const responseBody = (response: AxiosResponse) => response.data;
 
@@ -66,9 +67,16 @@ const TestErrors = {
     get500Error: () => requests.get('buggy/server-error')
 }
 
+const Basket = {
+    get: () => requests.get('basket'),
+    addItem: (productId: string, quantity = 1) => requests.post(`basket?productId=${productId}&quantity=${quantity}`, {}),
+    removeItem: (productId: string, quantity = 1) => requests.delete(`basket?productId=${productId}&quantity=${quantity}`)
+}
+
 const api = {
     Catalog,
-    TestErrors
+    TestErrors,
+    Basket
 }
 
 export default api;
