@@ -16,6 +16,7 @@ import { useStoreContext } from '../context/StoreContext';
 import { getCookie } from '../util/util';
 import api from '../api/api';
 import Loading from './Loading';
+import CheckoutPage from '../../features/checkout/CheckoutPage';
 
 function App() {
   const {setBasket} = useStoreContext();
@@ -64,6 +65,7 @@ function App() {
             <Route path='/about' element={<AboutPage/>} />
             <Route path='/contact' element={<ContactPage/>} />
             <Route path='/basket' element={<BasketPage/>} />
+            <Route path='/checkout' element={<CheckoutPage/>} />
             <Route path="*" element={<NotFound/>} />
           </Routes>
         </Container>

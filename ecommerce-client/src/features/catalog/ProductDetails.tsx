@@ -1,22 +1,32 @@
-import { Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { Divider, Grid, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../app/api/api";
+import { useStoreContext } from "../../app/context/StoreContext";
 import NotFound from "../../app/errors/NotFound";
 import Loading from "../../app/layout/Loading";
 import { Product } from "../../app/models/product";
 
 export default function ProductDetails(){
     const {id} = useParams<{id:string}>();
+    const {basket, setBasket, removeItem} = useStoreContext();
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
+    const [quantity, setQuantity] = useState(0);
+    const [submitting, setSubmitting] = useState(false);
+
+    const item = basket?.items.find(i => i.product.id === product?.id);
 
     useEffect(() => {
+        if(item){
+            setQuantity(item.quantity);
+        }
         api.Catalog.details(id!)
             .then(product => setProduct(product))
             .catch(error => console.log(error))
             .finally(() => setLoading(false));
-    }, [id]);
+    }, [id, item]);
 
     if(loading){
         return <Loading message='Loading product ...' />
@@ -26,6 +36,29 @@ export default function ProductDetails(){
         return (
             <NotFound />
         )
+    }
+
+    function handleInputChange(event: any){
+        if(event.target.value >= 0){
+            setQuantity(parseInt(event.target.value));
+        }
+    }
+
+    function handleUpdateCart(){
+        setSubmitting(true);
+        if(!item || quantity > item.quantity){
+            const updatedQuantity = item ? quantity - item.quantity : quantity;
+            api.Basket.addItem(product?.id!, updatedQuantity)
+                .then(basket => setBasket(basket))
+                .catch(error => console.log(error))
+                .finally(() => setSubmitting(false));
+        }else{
+            const updatedQuantity = item.quantity - quantity;
+            api.Basket.removeItem(product?.id!, updatedQuantity)
+                .then(() => removeItem(product?.id!, updatedQuantity))
+                .catch(error => console.log(error))
+                .finally(() => setSubmitting(false));
+        }
     }
 
     return (
@@ -63,6 +96,31 @@ export default function ProductDetails(){
                         </TableBody>
                     </Table>
                 </TableContainer>
+                <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                        <TextField 
+                        variant='outlined'
+                        type='number'
+                        label='Quantity in Cart'
+                        fullWidth
+                        value={quantity}
+                        onChange={handleInputChange}
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <LoadingButton 
+                        disabled={item?.quantity === quantity || !item && quantity === 0}
+                        loading={submitting}
+                        onClick={handleUpdateCart}
+                        sx={{height: '55px'}}
+                        color='primary' 
+                        size='large' 
+                        variant='contained' 
+                        fullWidth>
+                            {item ? 'Update Quantity' : 'Add to Cart'}
+                        </LoadingButton>
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
     )

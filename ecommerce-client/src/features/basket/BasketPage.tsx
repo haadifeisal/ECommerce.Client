@@ -1,8 +1,9 @@
 import { Add, Delete, Remove } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Button, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../../app/api/api";
 import { useStoreContext } from "../../app/context/StoreContext";
 import { currencyFormat } from "../../app/util/util";
@@ -62,7 +63,7 @@ export default function BasketPage() {
                                         <span>{item.product.name}</span>
                                     </Box>
                                 </TableCell>
-                                <TableCell align="right">${currencyFormat(item.product.price)}</TableCell>
+                                <TableCell align="right">{currencyFormat(item.product.price)}</TableCell>
                                 <TableCell align="center">
                                     <LoadingButton
                                         loading={status.loading && status.name === 'remove' + item.product.id}
@@ -93,6 +94,15 @@ export default function BasketPage() {
                 <Grid item xs={6} />
                 <Grid xs={6}>
                     <BasketSummary></BasketSummary>
+                    <Button 
+                    component={Link}
+                    to='/checkout'
+                    variant='contained'
+                    size='large'
+                    fullWidth
+                    >
+                        Checkout
+                    </Button>
                 </Grid>
             </Grid>
         </>
